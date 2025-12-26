@@ -201,6 +201,65 @@ pheatmap(data_total,
          annotation_names_row = FALSE
          )
 ```
+### complexheatmap
+#### 整合数据-挑选了三个绝对丰度的结果
+```R
+data_total <- cbind(ciber_res[,-c(24:26)],epic_res[,-1],quantiseq_res[,-1])
+data_total <- as.data.frame(t(data_total))
+colnames(data_total) <- data_total[1,]
+data_total <- dplyr::slice(data_total,-1)
+head(data_total)[1:5,1:5]
+```
+#### 检查数据类型是否正确转换为数值型
+```R
+data_total <- data_total %>% mutate_all(as.numeric)
+```
+* 标准化-方法3(范围限定在-3至3)
+```R 
+data_total <- scale(data_total)
+data_total[data_total > 3] <- 3
+data_total[data_total + 3 < 0] <- -3
+```
+
+#### 定义颜色渐变(也可以用circlize创建颜色映射)
+```R
+library(circlize)
+color_fun <- colorRamp2(c(-3, 0, 3), c("#336699", "white", "tomato"))
+```
+#### pd$type 和 pd$samples 是注释数据怎么上色
+```R
+type_colors <- c("control" = "green", "PAH" = "red")
+samples_colors <- c("all PAH" = "blue", "CTEPH patient" = "orange", "FD" = "purple",
+                    "idiopathic PAH patient" = "brown", "normal control" = "yellow",
+                    "patient with PAH and CHD" = "pink", "patient with PAH and CTD" = "magenta",
+                    "pulmonary arterial hypertension (PAH) patient" = "cyan")
+```
+```R
+columnAnno <- HeatmapAnnotation(type = pd$group,
+                                samples = pd$samples,
+                                col = list(type = type_colors, samples = samples_colors))
+```
+#### 绘制热图
+```R
+ComplexHeatmap::Heatmap(data_total, 
+                        na_col = "white",
+                        col = color_fun,  # 添加颜色映射函数
+                        show_column_names = F,
+                        row_names_side = "right",
+                        name = "fraction",
+                        column_order = c(colnames(data_total)[c(grep("control",pd$group),
+                                                                grep("PAH",pd$group))]),
+                        column_split = pd$group, 
+                        column_title = NULL,
+                        cluster_columns = F,
+                        top_annotation = columnAnno,
+                        heatmap_width = unit(20, "cm"),  # 调整热图宽度
+                        row_dend_width = unit(1, "cm"),  # 调整聚类树宽度
+                        cluster_rows = T, # 行聚类
+                        row_names_gp = gpar(fontsize = 8)  # 调整行名字体大小
+                        #cluster_columns = FALSE # 列聚类。                     
+                        )
+```
 
 
 
