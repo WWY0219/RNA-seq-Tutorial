@@ -10,6 +10,7 @@ IOBR V2.0.0
 * Github :<https://github.com/IOBR/IOBR>
 * ZhiHu-1:<https://blog.csdn.net/zfyyzhys/article/details/141048663>
 * Zhihu-2:<https://zhuanlan.zhihu.com/p/715185869>
+* Weichat:<https://mp.weixin.qq.com/s/nMeDmyO4M09z7vGnYU2K-A>
 ## Usage
 ### 01. 加载包并准备环境
 ```R
