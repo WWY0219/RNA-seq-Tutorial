@@ -4,8 +4,8 @@
 ### Version
 Mime1
 ### Learning
-* Github :
-* ZhiHu-1:[<https://zhuanlan.zhihu.com/p/1894789522887250489>](https://jishuzhan.net/article/1954880570147778561)
+* Github :<https://github.com/l-magnificence/Mime>
+* ZhiHu-1:<https://jishuzhan.net/article/1954880570147778561>
 * Zhihu-2:
 ## Usage
 ### 01. 加载包并准备环境
