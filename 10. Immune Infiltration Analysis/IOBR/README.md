@@ -2,7 +2,7 @@
 **IOBR(Immuno-Oncology Biological Research**，免疫肿瘤学生物研究)这个R包整合了8种已发表的方法（CIBERSORT、TIMER、xCell、MCPcounter、ESTIMATE、EPIC、IPS和quanTIseq)，用于解析肿瘤微环境的背景信息<br>
 开发者还收集了264个已发表的基因集签名，涵盖了肿瘤微环境、肿瘤代谢、m6A、外泌体、微卫星不稳定性和三级淋巴结构。<br>
 通过运行`signature_collection_citation`函数，可以获取这些基因集签名的来源文献，而`signature_collection`函数则返回所有给定签名的详细基因。<br>
-IOBR使用了三种计算方法来计算签名得分，包括**PCA*、**z-score**和**ssGSEA**。值得注意的是，IOBR还收集并使用了多种方法进行变量转换、可视化、批量生存分析、特征选择和统计分析。该包支持批量分析和结果可视化
+IOBR使用了三种计算方法来计算签名得分，包括**PCA**、**z-score**和**ssGSEA**。值得注意的是，IOBR还收集并使用了多种方法进行变量转换、可视化、批量生存分析、特征选择和统计分析。该包支持批量分析和结果可视化
 ## DESCRIPTION
 ### Version
 IOBR V2.0.0
