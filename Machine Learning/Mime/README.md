@@ -49,4 +49,5 @@ res <- ML.Dev.Prog.Sig(train_data = list_train_vali_Data$Dataset1,
 >    - Single:表示只使用十种算法中的一种。
 >    - double:表示使用两种算法的组合。
 >    - 在大多数情况下，我们通常会使用all模式来分析数据。<br>
+
 > 如果将unicox.filter.for.candi设置为T (默认值),Mime首先会在训练数据集中对提供的基因进行单变量cox回归，以筛选出预后变量，然后用于构建模型。
