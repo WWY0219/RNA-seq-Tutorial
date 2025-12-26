@@ -66,7 +66,7 @@ tme_deconvolution_methods
 ```
 > mcpcounter，epic，xcell，cibersort，cibersort_abs，ips，ESTIMATE，SVR，lsei，TIMER，quanTIseq<br>
 
-### Part I：cibersort
+### Part I: cibersort
 ```R
 ciber_res <- deconvo_tme(eset = exp, 
                          method = "cibersort", 
@@ -77,5 +77,58 @@ ciber_plot <- cell_bar_plot(input = ciber_res,
                             features = colnames(ciber_res)[2:23], 
                             title = "CIBERSORT Cell Fraction")
 ```
+### Part II: epic
+```R
+epic_res <- deconvo_tme(eset = exp,
+                        method = "epic",
+                        arrays = TRUE)
+epic_res
+epic_plot <- cell_bar_plot(input = epic_res,
+                           features = colnames(epic_res)[2:9], 
+                           title = "EPIC Cell Fraction")
+```
+### Part III: quantiseq
+```R
+quantiseq_res <- deconvo_tme(eset = exp, tumor = F, 
+                             arrays = TRUE, scale_mrna = TRUE, method = "quantiseq")
+quantiseq_res
+quantiseq_plot <- cell_bar_plot(input = quantiseq_res, features = colnames(quantiseq_res)[2:12], 
+                            title = "Quantiseq Cell Fraction")
+```
+### Part IV: MCPcounter
+```R
+mcpcounter_res <- deconvo_tme(eset = exp, method = "mcpcounter")
+mcpcounter_res
+```
+
+### Part V: xCELL
+```R
+xCELL_res <- deconvo_tme(eset = exp, method = "xcell",arrays = TRUE)
+```
+
+### Part V: TIMER
+```R
+TIMER_res <- deconvo_tme(eset = exp, method = "timer",group_list = group_list)
+```
+> 这里导入的group_list必须是TIMER能够识别的，比如TCGA中33肿瘤类型<br>
+
+
+### Part VI: estimate
+```R
+estimate_res <- deconvo_tme(eset = exp, method = "estimate")
+estimate_res
+```
+### Part VI: IPS
+```R
+ips_res <- deconvo_tme(eset = exprSet, method = "ips", plot= F)
+head(ips_res)
+```
+> 值得一提的是这个IPS，其是指immunophenotype (免疫表型评分)。 里面一共评估四个主要参数分别是：MHC分子(MHC molecules，MHC) ，免疫调节分子(Immunomodulators，CP) ，效应细胞(Effector cells，EC) ，抑制细胞(Suppressor cells，SC) 。使用者可以根据得到的结果联合生存数据/临床参数分析<br>
+
+### pheatmap热图
+
+
+
+
 
 
