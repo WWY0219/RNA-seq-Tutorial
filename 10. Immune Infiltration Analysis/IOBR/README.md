@@ -30,32 +30,23 @@ library(ggplot2)
 library(ggpubr)
 library(patchwork)
 library(RColorBrewer)
+library(pheatmap)
+library(tidyverse)
+library(gplots)
 set.seed(1234)
 # 查看工作路径下的文件
 list.files()
 dir.create("./CellChat/)
 ```
+加载表达数据
 ```R
 load("~/Desktop/data/combat.Rdata")
 head(exp)[1:4,1:4]
 ```
-数据结构belike
-> #           GSM3106326 GSM3106327 GSM3106328 GSM3106329<br>
-> # LINC01128   8.000049   8.044479   7.311868   7.610713<br>
-> # SAMD11      7.499611   7.562370   7.412649   7.239141<br>
-> # KLHL17      7.662076   7.672331   7.627330   7.564212<br>
-> # PLEKHN1     7.666884   7.889537   7.640606   7.746440<br>
 临床数据
 ```R
 head(pd)
 ```
-> #                                                title                  samples   GSE_num group<br>
-> # GSM3106326 Pulmonary arterial hypertension patient 1   idiopathic PAH patient GSE113439   PAH<br>
-> # GSM3106327 Pulmonary arterial hypertension patient 2 patient with PAH and CHD GSE113439   PAH<br>
-> # GSM3106328 Pulmonary arterial hypertension patient 3 patient with PAH and CTD GSE113439   PAH<br>
-> # GSM3106329 Pulmonary arterial hypertension patient 4 patient with PAH and CHD GSE113439   PAH<br>
-> # GSM3106330 Pulmonary arterial hypertension patient 5   idiopathic PAH patient GSE113439   PAH<br>
-> # GSM3106331 Pulmonary arterial hypertension patient 6   idiopathic PAH patient GSE113439   PAH<br>
 确认临床信息与表达数据是否符合
 ```R
 identical(rownames(pd),colnames(exp))
@@ -126,7 +117,90 @@ head(ips_res)
 > 值得一提的是这个IPS，其是指immunophenotype (免疫表型评分)。 里面一共评估四个主要参数分别是：MHC分子(MHC molecules，MHC) ，免疫调节分子(Immunomodulators，CP) ，效应细胞(Effector cells，EC) ，抑制细胞(Suppressor cells，SC) 。使用者可以根据得到的结果联合生存数据/临床参数分析<br>
 
 ### pheatmap热图
+#### 整合数据-挑选了三个绝对丰度的结果
+```R
+data_total <- cbind(ciber_res[,-c(24:26)],epic_res[,-1],quantiseq_res[,-1])
+data_total <- as.data.frame(t(data_total))
+colnames(data_total) <- data_total[1,]
+data_total <- dplyr::slice(data_total,-1)
+head(data_total)[1:5,1:5]
+```
+#### 检查数据类型是否正确转换为数值型
+```R
+data_total <- data_total %>% mutate_all(as.numeric)
+```
+#### 数据标准化
+* 方法1
+```R
+stand_fun <- function(indata=NULL, halfwidth=NULL, centerFlag=T, scaleFlag=T) {  
+                  outdata=t(scale(t(indata), center=centerFlag, scale=scaleFlag))
+                  if (!is.null(halfwidth)) {
+                     outdata[outdata > halfwidth] = halfwidth
+                     outdata[outdata < (-halfwidth)] = -halfwidth
+  }
+  return(outdata)
+}
+data_total <- stand_fun(data_total,halfwidth = 2)
+```
+* 方法2
+```R
+data_total <- scale(data_total)
+```
+#### 重新对列进行排序
+> group_list 是一个向量，表示每个样本的类型(PAH 或 control)<br>
+```R
+sorted_index <- order(group_list, decreasing = FALSE)
+```
+#### 使用排序索引对 data_total 重新排序列
+```R
+data_total <- data_total[, sorted_index]
+```
+#### 重新对 group_list 进行排序，以匹配列的顺序
+```R
+group_list <- group_list[sorted_index]
+```
+#### 创建注释
+* 列注释
+```
+annCol <- data.frame(Type = group_list,
+                     row.names = colnames(data_total),
+                     stringsAsFactors = FALSE)
+```
+* 行注释
+从行名中提取方法
+```R
+methods <- sub('.*_', '', rownames(data_total))
+```
+* 创建行注释数据框
 
+annRow <- data.frame(Methods = factor(methods, levels = unique(methods)),
+                     row.names = rownames(data_total),
+                     stringsAsFactors = FALSE)
+
+
+* 调整颜色梯度
+```R
+breaksList = seq(-5, 5, by = 0.1)
+colors <- colorRampPalette(c("#336699", "white", "tomato"))(length(breaksList))
+```
+#### 绘制热图
+```R
+pheatmap(data_total,
+         annotation_col = annCol,
+         annotation_row = annRow,
+         color = colors,
+         breaks = breaksList,
+         cluster_rows = FALSE,
+         cluster_cols = FALSE,
+         show_rownames = TRUE,
+         show_colnames = FALSE,
+         gaps_col = cumsum(table(annCol$Type)),  # 使用排序后的列分割点
+         gaps_row = cumsum(table(annRow$Methods)), # 行分割
+         fontsize_row = 6,
+         fontsize_col = 6,
+         annotation_names_row = FALSE
+         )
+```
 
 
 
