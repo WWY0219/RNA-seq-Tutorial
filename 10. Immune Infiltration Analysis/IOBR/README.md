@@ -8,6 +8,7 @@ IOBR使用了三种计算方法来计算签名得分，包括**PCA**、**z-score
 IOBR V2.0.0
 ### Learning
 * Github :<https://github.com/IOBR/IOBR>
+* Document:<https://iobr.github.io/book/how-to-use-iobr.html#the-main-pipeline-of-iobr>
 * ZhiHu-1:<https://blog.csdn.net/zfyyzhys/article/details/141048663>
 * Zhihu-2:<https://zhuanlan.zhihu.com/p/715185869>
 * Weichat:<https://mp.weixin.qq.com/s/nMeDmyO4M09z7vGnYU2K-A>
