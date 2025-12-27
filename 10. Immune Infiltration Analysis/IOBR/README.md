@@ -59,7 +59,7 @@ tme_deconvolution_methods
 ```
 > mcpcounter，epic，xcell，cibersort，cibersort_abs，ips，ESTIMATE，SVR，lsei，TIMER，quanTIseq<br>
 
-### Part II: 免疫浸润分析
+### Part Ⅱ: 免疫浸润分析
 #### cibersort
 ```R
 ciber_res <- deconvo_tme(eset = exp, 
