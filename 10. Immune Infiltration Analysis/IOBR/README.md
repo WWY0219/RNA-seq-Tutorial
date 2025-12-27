@@ -13,7 +13,7 @@ IOBR V2.0.0
 * Zhihu-2:<https://zhuanlan.zhihu.com/p/715185869>
 * Weichat:<https://mp.weixin.qq.com/s/nMeDmyO4M09z7vGnYU2K-A>
 ## Usage
-### 01. 加载包并准备环境
+### Part Ⅰ: 加载包并准备环境
 ```R
 Sys.setenv(LANGUAGE = "en")
 options(stringsAsFactors = FALSE)
@@ -59,7 +59,8 @@ tme_deconvolution_methods
 ```
 > mcpcounter，epic，xcell，cibersort，cibersort_abs，ips，ESTIMATE，SVR，lsei，TIMER，quanTIseq<br>
 
-### Part I: cibersort
+### Part II: 免疫浸润分析
+#### cibersort
 ```R
 ciber_res <- deconvo_tme(eset = exp, 
                          method = "cibersort", 
@@ -70,7 +71,7 @@ ciber_plot <- cell_bar_plot(input = ciber_res,
                             features = colnames(ciber_res)[2:23], 
                             title = "CIBERSORT Cell Fraction")
 ```
-### Part II: epic
+#### epic
 ```R
 epic_res <- deconvo_tme(eset = exp,
                         method = "epic",
@@ -80,7 +81,7 @@ epic_plot <- cell_bar_plot(input = epic_res,
                            features = colnames(epic_res)[2:9], 
                            title = "EPIC Cell Fraction")
 ```
-### Part III: quantiseq
+#### quantiseq
 ```R
 quantiseq_res <- deconvo_tme(eset = exp, tumor = F, 
                              arrays = TRUE, scale_mrna = TRUE, method = "quantiseq")
@@ -88,38 +89,38 @@ quantiseq_res
 quantiseq_plot <- cell_bar_plot(input = quantiseq_res, features = colnames(quantiseq_res)[2:12], 
                             title = "Quantiseq Cell Fraction")
 ```
-### Part IV: MCPcounter
+#### MCPcounter
 ```R
 mcpcounter_res <- deconvo_tme(eset = exp, method = "mcpcounter")
 mcpcounter_res
 ```
 
-### Part V: xCELL
+#### xCELL
 ```R
 xCELL_res <- deconvo_tme(eset = exp, method = "xcell",arrays = TRUE)
 ```
 
-### Part V: TIMER
+#### TIMER
 ```R
 TIMER_res <- deconvo_tme(eset = exp, method = "timer",group_list = group_list)
 ```
 > 这里导入的group_list必须是TIMER能够识别的，比如TCGA中33肿瘤类型<br>
 
 
-### Part VI: estimate
+#### estimate
 ```R
 estimate_res <- deconvo_tme(eset = exp, method = "estimate")
 estimate_res
 ```
-### Part VI: IPS
+#### IPS
 ```R
 ips_res <- deconvo_tme(eset = exprSet, method = "ips", plot= F)
 head(ips_res)
 ```
 > 值得一提的是这个IPS，其是指immunophenotype (免疫表型评分)。 里面一共评估四个主要参数分别是：MHC分子(MHC molecules，MHC) ，免疫调节分子(Immunomodulators，CP) ，效应细胞(Effector cells，EC) ，抑制细胞(Suppressor cells，SC) 。使用者可以根据得到的结果联合生存数据/临床参数分析<br>
 
-### pheatmap热图
-#### 整合数据-挑选了三个绝对丰度的结果
+#### pheatmap热图
+##### 整合数据-挑选了三个绝对丰度的结果
 ```R
 data_total <- cbind(ciber_res[,-c(24:26)],epic_res[,-1],quantiseq_res[,-1])
 data_total <- as.data.frame(t(data_total))
@@ -127,11 +128,11 @@ colnames(data_total) <- data_total[1,]
 data_total <- dplyr::slice(data_total,-1)
 head(data_total)[1:5,1:5]
 ```
-#### 检查数据类型是否正确转换为数值型
+##### 检查数据类型是否正确转换为数值型
 ```R
 data_total <- data_total %>% mutate_all(as.numeric)
 ```
-#### 数据标准化
+##### 数据标准化
 * 方法1
 ```R
 stand_fun <- function(indata=NULL, halfwidth=NULL, centerFlag=T, scaleFlag=T) {  
@@ -148,20 +149,20 @@ data_total <- stand_fun(data_total,halfwidth = 2)
 ```R
 data_total <- scale(data_total)
 ```
-#### 重新对列进行排序
+##### 重新对列进行排序
 > group_list 是一个向量，表示每个样本的类型(PAH 或 control)<br>
 ```R
 sorted_index <- order(group_list, decreasing = FALSE)
 ```
-#### 使用排序索引对 data_total 重新排序列
+##### 使用排序索引对 data_total 重新排序列
 ```R
 data_total <- data_total[, sorted_index]
 ```
-#### 重新对 group_list 进行排序，以匹配列的顺序
+##### 重新对 group_list 进行排序，以匹配列的顺序
 ```R
 group_list <- group_list[sorted_index]
 ```
-#### 创建注释
+##### 创建注释
 * 列注释
 ```
 annCol <- data.frame(Type = group_list,
@@ -185,7 +186,7 @@ annRow <- data.frame(Methods = factor(methods, levels = unique(methods)),
 breaksList = seq(-5, 5, by = 0.1)
 colors <- colorRampPalette(c("#336699", "white", "tomato"))(length(breaksList))
 ```
-#### 绘制热图
+##### 绘制热图
 ```R
 pheatmap(data_total,
          annotation_col = annCol,
@@ -203,8 +204,8 @@ pheatmap(data_total,
          annotation_names_row = FALSE
          )
 ```
-### complexheatmap
-#### 整合数据-挑选了三个绝对丰度的结果
+#### complexheatmap
+##### 整合数据-挑选了三个绝对丰度的结果
 ```R
 data_total <- cbind(ciber_res[,-c(24:26)],epic_res[,-1],quantiseq_res[,-1])
 data_total <- as.data.frame(t(data_total))
@@ -212,7 +213,7 @@ colnames(data_total) <- data_total[1,]
 data_total <- dplyr::slice(data_total,-1)
 head(data_total)[1:5,1:5]
 ```
-#### 检查数据类型是否正确转换为数值型
+##### 检查数据类型是否正确转换为数值型
 ```R
 data_total <- data_total %>% mutate_all(as.numeric)
 ```
@@ -223,12 +224,12 @@ data_total[data_total > 3] <- 3
 data_total[data_total + 3 < 0] <- -3
 ```
 
-#### 定义颜色渐变(也可以用circlize创建颜色映射)
+##### 定义颜色渐变(也可以用circlize创建颜色映射)
 ```R
 library(circlize)
 color_fun <- colorRamp2(c(-3, 0, 3), c("#336699", "white", "tomato"))
 ```
-#### pd$type 和 pd$samples 是注释数据怎么上色
+##### pd$type 和 pd$samples 是注释数据怎么上色
 ```R
 type_colors <- c("control" = "green", "PAH" = "red")
 samples_colors <- c("all PAH" = "blue", "CTEPH patient" = "orange", "FD" = "purple",
@@ -241,7 +242,7 @@ columnAnno <- HeatmapAnnotation(type = pd$group,
                                 samples = pd$samples,
                                 col = list(type = type_colors, samples = samples_colors))
 ```
-#### 绘制热图
+##### 绘制热图
 ```R
 ComplexHeatmap::Heatmap(data_total, 
                         na_col = "white",
